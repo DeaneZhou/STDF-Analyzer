@@ -48,7 +48,7 @@ namespace SillyMonkey.ViewModels
         public void LoadStdFiles(string[] paths) {
             foreach (string path in paths) {
                 var ext = System.IO.Path.GetExtension(path).ToLower();
-                if (ext == ".stdf" || ext == ".std") {
+                if (ext == ".stdf" || ext == ".std" || ext == ".std_1") {
                     _ea.GetEvent<Event_OpenFile>().Publish(path);
                 } else {
                     System.Windows.MessageBox.Show("Only support stdf or std file");

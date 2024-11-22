@@ -259,5 +259,60 @@ namespace DataContainer {
             return true;
         }
 
+        public void RemoveFirstInvalidPart()
+        {
+            if (_softBin_PartContainer[0] > 65534)
+            {
+                _allIndex.RemoveAt(0);
+                _chipType_PartContainer.RemoveAt(0);
+                _hardBin_PartContainer.RemoveAt(0);
+                _partId_PartContainer.RemoveAt(0);
+                _partIdx = _partIdx - 1;
+                _preIdx = _preIdx - 1;
+                _resultType_PartContainer.RemoveAt(0);
+                _site_PartContainer.RemoveAt(0);
+                _softBin_PartContainer.RemoveAt(0);
+                _testTime_PartContainer.RemoveAt(0);
+                _xCord_PartContainer.RemoveAt(0);
+                _yCord_PartContainer.RemoveAt(0);
+
+                Parallel.ForEach(
+                    _dataBase_Result.Values,
+                    item =>
+                    {
+                        List<float> tempList = new List<float>();
+
+                        for (int i = 0; i < (_preIdx >> 12) + 1; i++)
+                        {
+                            var tempList1 = (item[i]._dataBlock.ToList());
+                            tempList.AddRange(tempList1);
+                        }
+
+                        if (tempList.Count > 0)
+                        {
+                            tempList.RemoveAt(0);
+                            tempList.Add(float.NaN);
+
+                            for (int i = 0; i < (_preIdx >> 12) + 1; i++)
+                            {
+                                Array.Copy(
+                                    tempList.ToArray(),
+                                    i * 4096,
+                                    item[i]._dataBlock,
+                                    0,
+                                    4096
+                                );
+                            }
+                        }
+                    }
+                );
+
+                var invalidSites = _siteContainer.Where(pair => pair.Key > 128).ToList();
+                foreach (var site in invalidSites)
+                {
+                    _siteContainer.Remove(site.Key);
+                }
+            }
+        }
     }
 }

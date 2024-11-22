@@ -43,6 +43,7 @@ namespace FileReader {
                 try {
                     s.Start();
                     var sts = _v4Reader.ReadRaw(dc);
+					dc.RemoveFirstInvalidPart(); // 20241122
                     s.Stop();
                     Console.WriteLine("Read Raw:" + s.ElapsedMilliseconds);
                     //if(sts == StdV4Reader.ReadStatus.Done) {

@@ -28,7 +28,17 @@ namespace UI_Chart.Views {
 
             histoChart.RightClicked -= histoChart.DefaultRightClickEvent;
             histoChart.Configuration.DoubleClickBenchmark = false;
-            histoChart.Configuration.LockHorizontalAxis = true;
+            histoChart.Configuration.LockVerticalAxis = true;
+
+ histoChart.Configuration.LeftClickDragPan = false;
+            histoChart.Configuration.ScrollWheelZoom = false;
+            histoChart.Configuration.RightClickDragZoom = false;
+
+            histoChart.MouseDown += HistoChart_MouseDown;
+            histoChart.MouseLeftButtonDown += HistoChart_MouseLeftButtonDown;
+            histoChart.MouseMove += HistoChart_MouseMove;
+            histoChart.MouseLeftButtonUp += HistoChart_MouseLeftButtonUp;
+            histoChart.RightClicked += HistoChart_MouseRightButtonClicked;
 
             switch(SA.HistogramChartAxis){
                 case ChartAxisType.Sigma:
@@ -157,6 +167,146 @@ namespace UI_Chart.Views {
             AxisSigma6Trend.IsChecked = SA.TrendEnableSigma6Line;
             AxisSigma3Trend.IsChecked = SA.TrendEnableSigma3Line;
 
+            sitesChoosed = new List<int>();
+            AllSites = new ObservableCollection<int>();
+            IsMouseDown = false;
+
+            //   var da = StdDB.GetDataAcquire(_subData.StdFilePath);
+        }
+
+        private void HistoChart_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.MiddleButton == MouseButtonState.Pressed)
+            {
+                IsZoom = false;
+                toggleOutlierHisto.IsChecked = false;
+                UpdateHisto();
+                histoChart.Refresh();
+            }
+        }
+
+        private int zoomTime = 1;
+        private bool IsZoom = false;
+        float zoomStartX = 0.0f;
+        float zoomEndX = 0.0f;
+
+        private void HistoChart_MouseRightButtonClicked(object sender, EventArgs e)
+        {
+            if (!IsZoom || CurrentParamChanged)
+                return; // Not in Zoom, so return directly.
+
+            if (zoomTime < 10) // Only allow zoom out 10 times.
+                zoomTime++;
+            else
+                IsZoom = false;
+
+            float ov = Math.Abs(zoomEndX - zoomStartX) * 0.25f * zoomTime;
+
+            if (IsZoom)
+                if (zoomStartX < zoomEndX)
+                    UpdateHistoSeriesForZoom(zoomStartX - ov, zoomEndX + ov);
+                else
+                    UpdateHistoSeriesForZoom(zoomEndX - ov, zoomEndX + ov);
+        }
+
+        private void HistoChart_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (poly != null)
+                histoChart.Plot.Remove(poly);
+            bool validMove = false;
+
+            validMove =
+                Math.Abs(startPointInPixcel[0] - endPointInPixcel[0])
+                > 20
+            /*&& Math.Abs(startPointInPixcel[1] - endPointInPixcel[1]) > 10*/;
+
+            if (IsMouseDown && validMove)
+            {
+                zoomStartX = (float)startPoint[0];
+                zoomEndX = (float)endPoint[0];
+
+                if (zoomStartX < zoomEndX)
+                    UpdateHistoSeriesForZoom(zoomStartX, zoomEndX);
+                else
+                    UpdateHistoSeriesForZoom(zoomEndX, zoomStartX);
+                zoomTime = 1;
+                IsZoom = true;
+                CurrentParamChanged = false;
+            }
+            IsMouseDown = false;
+            //histoChart.Refresh();
+        }
+        Polygon poly = null;
+
+        private void HistoChart_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (IsMouseDown)
+            {
+                int pixelX = (int)e.MouseDevice.GetPosition(histoChart).X;
+                int pixelY = (int)e.MouseDevice.GetPosition(histoChart).Y;
+
+                endPointInPixcel[0] = pixelX;
+                endPointInPixcel[1] = pixelY;
+
+                //var Point = e.GetPosition(histoChart);
+                //(double coordinateRealX, double coordinateRealY) mouseCoordinates =
+                //    histoChart.Plot.GetCoordinate((float)Point.X, (float)Point.Y);
+
+                (double coordinateX, double coordinateY) = histoChart.GetMouseCoordinates();
+
+                endPoint[0] = coordinateX;
+                endPoint[1] = coordinateY;
+
+                double[] startPointXs = new double[4];
+                double[] endPointXs = new double[4];
+
+                // x1, y1; x2, y2
+                startPointXs[0] = startPoint[0]; // x1, y2
+                startPointXs[1] = startPoint[0]; // x1, y1
+                startPointXs[2] = endPoint[0]; // x2, y1
+                startPointXs[3] = endPoint[0]; // x2, y2
+
+                endPointXs[0] = endPoint[1];
+                endPointXs[1] = startPoint[1];
+                endPointXs[2] = startPoint[1];
+                endPointXs[3] = endPoint[1];
+                if (poly != null)
+                    histoChart.Plot.Remove(poly);
+                poly = histoChart.Plot.AddPolygon(
+                    startPointXs,
+                    endPointXs,
+                    Color.Transparent,
+                    1,
+                    Color.Red
+                );
+
+                histoChart.Refresh();
+            }
+        }
+
+        //        string txtX, txtY;
+        double[] startPoint = new double[2];
+        double[] endPoint = new double[2];
+
+        int[] startPointInPixcel = new int[2];
+        int[] endPointInPixcel = new int[2];
+
+        private void HistoChart_MouseLeftButtonDown(object sender, MouseEventArgs e)
+        {
+            IsMouseDown = true;
+            if (true)
+            {
+                int pixelX = (int)e.MouseDevice.GetPosition(histoChart).X;
+                int pixelY = (int)e.MouseDevice.GetPosition(histoChart).Y;
+
+                startPointInPixcel[0] = pixelX;
+                startPointInPixcel[1] = pixelY;
+
+                (double coordinateX, double coordinateY) = histoChart.GetMouseCoordinates();
+
+                startPoint[0] = coordinateX;
+                startPoint[1] = coordinateY;
+            }
         }
         IRegionManager _regionManager;
         IEventAggregator _ea;
@@ -172,6 +322,10 @@ namespace UI_Chart.Views {
         private float _allsigmaLowTrend, _allsigmaHighTrend;
         private float _allsigmaLowHisto, _allsigmaHighHisto;
 
+        public ObservableCollection<int> AllSites { get; set; } // 20241122
+        private List<int> sitesChoosed;
+
+        private bool IsMouseDown = false;
 
         #region Binding_prop
 
@@ -265,6 +419,7 @@ namespace UI_Chart.Views {
         }
 
         //get raw data
+        private bool CurrentParamChanged = true; //20241122
         void UpdateData() {
             if (_selectedIds == null || _selectedIds.Count == 0) {
                 _dataValid = false;
@@ -274,6 +429,13 @@ namespace UI_Chart.Views {
                 _dataValid = true;
             }
             var da = StdDB.GetDataAcquire(_subData.StdFilePath);
+			// 20241122
+            if (AllSites.Count == 0)
+            {
+                foreach (var s in da.GetSites())
+                    AllSites.Add(s);
+            }
+            CurrentParamChanged = true;
 
             var idInfo = da.GetTestInfo(_selectedIds[0]);
             _lowLimit = idInfo.LoLimit ?? float.NegativeInfinity;
@@ -286,6 +448,11 @@ namespace UI_Chart.Views {
             } else {
                 _ifShowLegendCheckBox = true;
             }
+            
+            var itemStat = da.GetFilteredStatistic(_subData.FilterId, _selectedIds[0]);
+
+            if (isInvalid(itemStat.MeanValue))
+                return;
             _deviceCount = da.GetFilteredChipsCount(_subData.FilterId);
             if (_deviceCount == 0) {
                 _ubound = 1;
@@ -332,6 +499,10 @@ namespace UI_Chart.Views {
                 var s = GetPatialSeries(xs, data);
 
                 var color = SA.GetColor(i);
+
+				// 20241122
+                if (s.Item1.Length == 0 || s.Item2.Length == 0)
+                    continue;
 
                 trendChart.Plot.AddSignalXY(s.Item1, s.Item2, Color.FromArgb(color.A, color.R, color.G, color.B), _selectedIds[i]);
             }
@@ -491,6 +662,23 @@ namespace UI_Chart.Views {
             return (rangeCnt, range, step);
         }
 
+        List<float> GetZoomData(double start, double stop, IEnumerable<float> data)
+        {
+            List<float> zoomData = new List<float>();
+
+            foreach (var f in data)
+            {
+                if (isInvalid(f))
+                    continue;
+                if (f > start && f < stop)
+                {
+                    zoomData.Add(f);
+                }
+            }
+
+            return zoomData;
+        }
+
         private void UpdateHistoSeries(float fstart, float fstop) {
             if (!_dataValid) return;
             if (isInvalid(fstart) || isInvalid(fstop)) return;
@@ -518,14 +706,14 @@ namespace UI_Chart.Views {
 
                 for (int i = 0; i < (sites.Length > 16 ? 16 : sites.Length); i++) {
                     var data = da.GetFilteredItemDataBySite(_selectedIds[0], _subData.FilterId, sites[i]);
-                    if (data.Count() == 0) continue;
+                    if (data.Count() == 0 || !sitesChoosed.Contains(sites[i])) continue;
                     var histo = GetHistogramData(start, stop, data);
 
                     var color = SA.GetColor(i);
 
                     var bar = histoChart.Plot.AddBar(histo.Item1, histo.Item2, Color.FromArgb(color.A, color.R, color.G, color.B));
                     bar.BarWidth = histo.Item3 > 0 ? histo.Item3 : 1;
-                    bar.Label = $"S:{sites[i]}";
+                    //bar.Label = $"S:{sites[i]}"; 20241122
 
                     if (i == 0) {
                         maxCnt = histo.Item1.Max();
@@ -565,6 +753,152 @@ namespace UI_Chart.Views {
             var actStop = stop + ov;
             histoChart.Plot.SetAxisLimitsX(actStart, actStop);
 
+            histoChart.Plot.AxisAutoY();
+            histoChart.Refresh();
+        }
+
+        private void UpdateHistoSeriesForZoom(float fstart, float fstop)
+        {
+            if (!_dataValid)
+                return;
+            if (isInvalid(fstart) || isInvalid(fstop))
+                return;
+            if (_deviceCount == 0)
+                return;
+
+            histoChart.Plot.Clear();
+            histoChart.Plot.Title(_itemTitleHisto, true, null, 12);
+            histoChart.Plot.Legend(_ifShowLegendCheckBox, ScottPlot.Alignment.UpperRight);
+
+            UpdateAxis_Histo();
+
+            var da = StdDB.GetDataAcquire(_subData.StdFilePath);
+
+            double maxCnt = 0;
+
+            double start = fstart;
+            double stop = fstop;
+            if (start == stop)
+            {
+                start -= 1;
+                stop += 1;
+            }
+
+            // deane
+            List<float> allData = new List<float>();
+            int TotalValidCnt = 0;
+            if (toggleSplitSite.IsEnabled && toggleSplitSite.IsChecked.Value)
+            {
+                var sites = da.GetSites();
+
+                for (int i = 0; i < (sites.Length > 16 ? 16 : sites.Length); i++)
+                {
+                    var data = da.GetFilteredItemDataBySite(
+                        _selectedIds[0],
+                        _subData.FilterId,
+                        sites[i]
+                    );
+                    if (data.Count() == 0 || !sitesChoosed.Contains(sites[i]))
+                        continue;
+                    var histo = GetHistogramData(start, stop, data);
+
+                    var color = SA.GetColor(i);
+
+                    var bar = histoChart.Plot.AddBar(
+                        histo.Item1.Skip(1).Take(101).ToArray(),
+                        histo.Item2.Skip(1).Take(101).ToArray(),
+                        Color.FromArgb(color.A, color.R, color.G, color.B)
+                    );
+                    bar.BarWidth = histo.Item3 > 0 ? histo.Item3 : 1;
+                    //bar.Label = $"S:{sites[i]}";
+                    // bar.IsVisible = false;
+                    if (i == 0)
+                    {
+                        maxCnt = histo.Item1.Max();
+                    }
+                    else
+                    {
+                        if (maxCnt < histo.Item1.Max())
+                            maxCnt = histo.Item1.Max();
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < (_selectedIds.Count > 16 ? 16 : _selectedIds.Count); i++)
+                {
+                    var data = da.GetFilteredItemData(_selectedIds[i], _subData.FilterId);
+                    // TotalValidCnt = data.Count<float>(); //
+                    var histo = GetHistogramData(start, stop, data);
+
+                    var color = SA.GetColor(i);
+
+                    var bar = histoChart.Plot.AddBar(
+                        histo.Item1.Skip(1).Take(101).ToArray(),
+                        histo.Item2.Skip(1).Take(101).ToArray(),
+                        Color.FromArgb(color.A, color.R, color.G, color.B)
+                    );
+                    bar.BarWidth = histo.Item3 > 0 ? histo.Item3 : 1;
+                    bar.Label = _selectedIds[i];
+
+                    //var colorOutlier = SA.GetHistogramOutlierColor();
+                    //histoChart
+                    //    .Plot.AddBar(
+                    //        histo.Item1.Take(1).ToArray(),
+                    //        histo.Item2.Take(1).ToArray(),
+                    //        Color.FromArgb(
+                    //            colorOutlier.A,
+                    //            colorOutlier.R,
+                    //            colorOutlier.G,
+                    //            colorOutlier.B
+                    //        )
+                    //    )
+                    //    .BarWidth = histo.Item3 > 0 ? histo.Item3 : 1;
+                    //histoChart
+                    //    .Plot.AddBar(
+                    //        histo.Item1.Skip(102).Take(1).ToArray(),
+                    //        histo.Item2.Skip(102).Take(1).ToArray(),
+                    //        Color.FromArgb(
+                    //            colorOutlier.A,
+                    //            colorOutlier.R,
+                    //            colorOutlier.G,
+                    //            colorOutlier.B
+                    //        )
+                    //    )
+                    //    .BarWidth = histo.Item3 > 0 ? histo.Item3 : 1;
+
+                    if (i == 0)
+                    {
+                        maxCnt = histo.Item1.Max();
+                    }
+                    else
+                    {
+                        if (maxCnt < histo.Item1.Max())
+                            maxCnt = histo.Item1.Max();
+                    }
+                }
+            }
+            //Deane
+            allData = GetZoomData(
+                start,
+                stop,
+                da.GetFilteredItemData(_selectedIds[0], _subData.FilterId)
+            );
+            ItemStatistic iStat = new ItemStatistic(allData, (float)start, (float)stop);
+            var info = da.GetTestInfo(_selectedIds[0]);
+            string failureRate = "0.0";
+            if (da.ChipsCount > 0)
+                failureRate = ((100.0 * iStat.PassCount) / da.ChipsCount).ToString("f3") + "%";
+            _itemTitleHisto =
+                $"{_selectedIds[0]}:{info.TestText}\nmean|{iStat.MeanValue:f3}  median|{iStat.MedianValue:f3}  σ|{iStat.Sigma:f3}  QTY|{iStat.PassCount}/{da.ChipsCount}={failureRate}";
+            histoChart.Plot.Title(_itemTitleHisto, true, null, 12);
+
+            var ov = 5 * (stop - start) / 100;
+            if (ov == 0)
+                ov = 1;
+            var actStart = start - ov;
+            var actStop = stop + ov;
+            histoChart.Plot.SetAxisLimitsX(actStart, actStop);
             histoChart.Plot.AxisAutoY();
             histoChart.Refresh();
         }

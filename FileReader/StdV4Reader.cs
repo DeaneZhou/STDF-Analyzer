@@ -384,8 +384,8 @@ namespace FileReader {
             var tf = rdB1(record, i, len); i += 1;
             var pf = rdB1(record, i, len); i += 1;
 
-            if (Bit(tf, 1)) 
-                return;
+            //if (Bit(tf, 1)) 
+            //    return;
 
             var result = rdR4(record, i, len); i += 4;
             string txt="";
@@ -457,6 +457,9 @@ namespace FileReader {
             } 
             
 
+            if (Bit(tf, 1))
+                return;
+            else
             _dc.AddTestData(sn, id.GetUID(), result);
             _lastUidBySite[sn] = id;
         }

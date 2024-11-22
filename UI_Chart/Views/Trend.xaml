@@ -131,7 +131,38 @@
                       Margin="20,0,0,0" BorderThickness="0" Background="Transparent">
                     <Image Source="/SillyMonkey.Core;component/Resource/icon/Material-CallSplit.png" Width="16" Height="16"/>
                 </ToggleButton>
-
+                <!--  /*  -->
+                <ToggleButton
+                    x:Name="tgPopSites"
+                    Width="23"
+                    Height="23"
+                    Margin="20,0,0,0"
+                    HorizontalAlignment="Left"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ToolTip="Select Sites"
+                    IsEnabled="{Binding ElementName=toggleSplitSite,Path=IsChecked}"
+                    >
+                    <!--<Image Source="/SillyMonkey.Core;component/Resource/icon/VaadinIcons-EllipsisDotsV.png" />-->
+                    <TextBlock Text="S" Background="LightBlue"/>
+                </ToggleButton>
+                <Popup
+                    x:Name="popSites"
+                    Width="80"
+                    Height="150"
+                    AllowsTransparency="True"
+                    HorizontalOffset="-65"
+                    IsOpen="{Binding ElementName=tgPopSites, Path=IsChecked, Mode=TwoWay}"
+                    Placement="Bottom"
+                    PlacementTarget="{Binding ElementName=tgPopSites}"
+                    PopupAnimation="Slide"
+                    StaysOpen="False">
+                    <Border Background="White" BorderBrush="Gray" BorderThickness="1">
+                        <StackPanel Orientation="Vertical">
+                            <ListBox ItemsSource="{Binding Path=AllSites, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" x:Name="allsites" SelectionChanged="allsites_SelectionChanged" SelectionMode="Multiple"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
             </StackPanel>
             <ToggleButton Grid.Column="1" Width="20" Height="20" x:Name="tgPopHisto" ToolTip="Axis Line Setup"  BorderThickness="0" Background="Transparent" HorizontalAlignment="Left">
                 <Image Source="/SillyMonkey.Core;component/Resource/icon/VaadinIcons-EllipsisDotsV.png" />
