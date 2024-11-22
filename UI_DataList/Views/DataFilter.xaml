@@ -28,25 +28,26 @@
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="58*"/>
+                            <ColumnDefinition Width="119*"/>
                             <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="177*"/>
                         </Grid.ColumnDefinitions>
-                        <ListBox x:Name="lbAllSites" FontSize="8" Grid.Column="0" 
-                                 ItemsSource="{Binding AllSites}" SelectionMode="Extended">
+                        <ListBox x:Name="lbAllSites" FontSize="12" Grid.Column="0" 
+                                 ItemsSource="{Binding AllSites}" SelectionMode="Extended" Grid.ColumnSpan="2">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick" >
                                     <i:InvokeCommandAction Command="{Binding AddSite}" CommandParameter="{Binding ElementName=lbAllSites}"/>
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </ListBox>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
                             <Button Content=">>" Margin="0,0,0,10" Command="{Binding AddAllSites}"/>
                             <Button Content=">" Margin="0,0,0,10" Command="{Binding AddSites}" CommandParameter="{Binding ElementName=lbAllSites}"/>
                             <Button Content="&lt;" Margin="0,0,0,10" Command="{Binding RemoveSites}" CommandParameter="{Binding ElementName=lbEnabledSites}"/>
                             <Button Content="&lt;&lt;" Margin="0,0,0,10" Command="{Binding RemoveAllSites}"/>
                         </StackPanel>
-                        <ListBox x:Name="lbEnabledSites" FontSize="8" Grid.Column="2" 
+                        <ListBox x:Name="lbEnabledSites" FontSize="12" Grid.Column="3" 
                                  ItemsSource="{Binding EnabledSites}" SelectionMode="Extended">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick" >
@@ -68,7 +69,7 @@
                             <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <ListBox x:Name="lbAllHBins" FontSize="8" Grid.Column="0" 
+                        <ListBox x:Name="lbAllHBins" FontSize="12" Grid.Column="0" 
                                  ItemsSource="{Binding AllHBins}" SelectionMode="Extended">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick" >
@@ -82,7 +83,7 @@
                             <Button Content="&lt;" Margin="0,0,0,10" Command="{Binding RemoveHBins}" CommandParameter="{Binding ElementName=lbEnabledHBins}"/>
                             <Button Content="&lt;&lt;" Margin="0,0,0,10" Command="{Binding RemoveAllHBins}"/>
                         </StackPanel>
-                        <ListBox x:Name="lbEnabledHBins" FontSize="8" Grid.Column="2" 
+                        <ListBox x:Name="lbEnabledHBins" FontSize="12" Grid.Column="2" 
                                  ItemsSource="{Binding EnabledHBins}" SelectionMode="Extended">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick" >
@@ -105,7 +106,7 @@
                             <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="85*"/>
                         </Grid.ColumnDefinitions>
-                        <ListBox x:Name="lbAllSBins" FontSize="8" Grid.Column="0" 
+                        <ListBox x:Name="lbAllSBins" FontSize="12" Grid.Column="0" 
                                  ItemsSource="{Binding AllSBins}" SelectionMode="Extended" Grid.ColumnSpan="2">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick" >
@@ -119,7 +120,7 @@
                             <Button Content="&lt;" Margin="0,0,0,10" Command="{Binding RemoveSBins}" CommandParameter="{Binding ElementName=lbEnabledSBins}"/>
                             <Button Content="&lt;&lt;" Margin="0,0,0,10" Command="{Binding RemoveAllSBins}"/>
                         </StackPanel>
-                        <ListBox x:Name="lbEnabledSBins" FontSize="8" Grid.Column="3" 
+                        <ListBox x:Name="lbEnabledSBins" FontSize="12" Grid.Column="3" 
                                  ItemsSource="{Binding EnabledSBins}" SelectionMode="Extended">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseDoubleClick" >

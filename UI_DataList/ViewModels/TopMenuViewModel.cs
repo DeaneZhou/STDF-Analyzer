@@ -40,7 +40,7 @@ namespace UI_DataList.ViewModels {
         void ExecuteOpenFileDiag() {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = "选择数据源文件";
-            openFileDialog.Filter = "All|*.*|STDF|*.stdf|STD|*.std";
+            openFileDialog.Filter = "STDF|*.stdf|STD|*.std|STD_1|*.std_1"; //All|*.*|
             openFileDialog.FileName = string.Empty;
             openFileDialog.FilterIndex = 1;
             openFileDialog.Multiselect = true;
@@ -53,7 +53,7 @@ namespace UI_DataList.ViewModels {
             var paths = openFileDialog.FileNames;
             foreach (string path in paths) {
                 var ext = System.IO.Path.GetExtension(path).ToLower();
-                if (ext == ".stdf" || ext == ".std") {
+                if (ext == ".stdf" || ext == ".std" || ext == ".std_1") {
                     _ea.GetEvent<Event_OpenFile>().Publish(path);
                 } else {
                     System.Windows.Forms.MessageBox.Show("Invalid File");

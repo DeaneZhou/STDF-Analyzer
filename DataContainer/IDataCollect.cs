@@ -21,5 +21,6 @@ namespace DataContainer{
         ItemInfo GetTestInfo(string uid);
         void SetReadingPercent(int percent);
         void AnalyseData();
+        void RemoveFirstInvalidPart(); // 20241122
     }
 }

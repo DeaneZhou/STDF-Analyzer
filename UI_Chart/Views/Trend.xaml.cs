@@ -6,10 +6,12 @@ using ScottPlot.Plottable;
 using SillyMonkey.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace UI_Chart.Views {
     /// <summary>
@@ -30,7 +32,7 @@ namespace UI_Chart.Views {
             histoChart.Configuration.DoubleClickBenchmark = false;
             histoChart.Configuration.LockVerticalAxis = true;
 
- histoChart.Configuration.LeftClickDragPan = false;
+            histoChart.Configuration.LeftClickDragPan = false;
             histoChart.Configuration.ScrollWheelZoom = false;
             histoChart.Configuration.RightClickDragZoom = false;
 
@@ -1430,6 +1432,8 @@ namespace UI_Chart.Views {
         }
 
         private void toggleSplitSite_Click(object sender, System.Windows.RoutedEventArgs e) {
+            if (toggleSplitSite.IsChecked ?? false) //20241122
+                allsites.SelectAll();
             ExecuteCmdToggleSplitBySiteHisto();
         }
 
@@ -1497,6 +1501,18 @@ namespace UI_Chart.Views {
             }
 
             histoChart.Refresh();
+        }
+
+        // 20241122
+        private void allsites_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            sitesChoosed.Clear();
+            foreach (int a in allsites.SelectedItems)
+            {
+                sitesChoosed.Add(a);
+            }
+
+            ExecuteCmdToggleSplitBySiteHisto();
         }
 
         private void AxisSigma3Histo_Click(object sender, System.Windows.RoutedEventArgs e) {
