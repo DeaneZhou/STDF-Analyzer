@@ -44,6 +44,13 @@ namespace UI_DataList.ViewModels {
             set { SetProperty(ref _allSBins, value); }
         }
 
+        private ObservableCollection<string> _allSBinsFullName;
+        public ObservableCollection<string> AllSBinsFullName
+        {
+            get { return _allSBinsFullName; }
+            set { SetProperty(ref _allSBinsFullName, value); }
+        }
+
         private ObservableCollection<ushort> _enabledSBins;
         public ObservableCollection<ushort> EnabledSBins {
             get { return _enabledSBins; }
@@ -158,6 +165,13 @@ namespace UI_DataList.ViewModels {
             AllHBins = new ObservableCollection<ushort>(dataAcquire.GetHardBins().OrderBy(x => x));
             EnabledHBins = new ObservableCollection<ushort>(AllHBins.Except(_filter.MaskHardBins).OrderBy(x => x));
             AllSBins = new ObservableCollection<ushort>(dataAcquire.GetSoftBins().OrderBy(x => x));
+
+            var sT = dataAcquire.GetSBinInfo();
+            List<string> listSbin = new List<string>();
+            foreach(var key in sT.Keys.OrderBy(x=>x))
+                listSbin.Add(key.ToString() + "-" + sT[key].Item1);
+            AllSBinsFullName = new ObservableCollection<string>(listSbin);
+            
             EnabledSBins = new ObservableCollection<ushort>(AllSBins.Except(_filter.MaskSoftBins).OrderBy(x => x));
 
             //IfmaskDuplicateChips = _filter.IfmaskDuplicateChips;
@@ -390,6 +404,7 @@ namespace UI_DataList.ViewModels {
             AllHBins = new ObservableCollection<ushort>(dataAcquire.GetHardBins().OrderBy(x => x));
             EnabledHBins = new ObservableCollection<ushort>(AllHBins);
             AllSBins = new ObservableCollection<ushort>(dataAcquire.GetSoftBins().OrderBy(x => x));
+
             EnabledSBins = new ObservableCollection<ushort>(AllSBins);
 
             //IfmaskDuplicateChips = _filter.IfmaskDuplicateChips;
@@ -453,6 +468,9 @@ namespace UI_DataList.ViewModels {
         public DelegateCommand<ListBox> RemoveHBins { get; private set; }
         public DelegateCommand<ListBox> RemoveSBin { get; private set; }
         public DelegateCommand<ListBox> AddSBin { get; private set; }
+
+        public DelegateCommand<ListBox> AddSBinFull { get; private set; }
+
         public DelegateCommand AddAllSBins { get; private set; }
         public DelegateCommand<ListBox> AddSBins { get; private set; }
         public DelegateCommand RemoveAllSBins { get; private set; }
@@ -548,6 +566,17 @@ namespace UI_DataList.ViewModels {
 
                 EnabledSBins.OrderBy(x => x);
             });
+
+            AddSBinFull = new DelegateCommand<ListBox>((e) => {
+                var v = ((ListBox)(e));
+                string selectFullItem = v.SelectedItem.ToString().Split('-')[0];
+                ushort i = (ushort) int.Parse(selectFullItem);
+                if (v.SelectedIndex >= 0 && !EnabledSBins.Contains(i))
+                    EnabledSBins.Add(i);
+
+                EnabledSBins.OrderBy(x => x);
+            });
+
             AddAllSBins = new DelegateCommand(() => {
                 EnabledSBins.Clear();
                 foreach (var v in AllSBins)

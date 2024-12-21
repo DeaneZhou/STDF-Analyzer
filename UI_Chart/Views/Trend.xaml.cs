@@ -27,6 +27,7 @@ namespace UI_Chart.Views {
             trendChart.RightClicked -= trendChart.DefaultRightClickEvent;
             trendChart.Configuration.DoubleClickBenchmark = false;
             trendChart.Configuration.LockVerticalAxis = true;
+            
 
             histoChart.RightClicked -= histoChart.DefaultRightClickEvent;
             histoChart.Configuration.DoubleClickBenchmark = false;
@@ -42,7 +43,8 @@ namespace UI_Chart.Views {
             histoChart.MouseLeftButtonUp += HistoChart_MouseLeftButtonUp;
             histoChart.RightClicked += HistoChart_MouseRightButtonClicked;
 
-            switch(SA.HistogramChartAxis){
+
+            switch (SA.HistogramChartAxis){
                 case ChartAxisType.Sigma:
                     radioSigmaHisto.IsChecked = true;
                     break;
@@ -506,7 +508,8 @@ namespace UI_Chart.Views {
                 if (s.Item1.Length == 0 || s.Item2.Length == 0)
                     continue;
 
-                trendChart.Plot.AddSignalXY(s.Item1, s.Item2, Color.FromArgb(color.A, color.R, color.G, color.B), _selectedIds[i]);
+                //trendChart.Plot.AddSignalXY(s.Item1, s.Item2, Color.FromArgb(color.A, color.R, color.G, color.B), _selectedIds[i]);
+                trendChart.Plot.AddScatter(s.Item1, s.Item2, Color.FromArgb(color.A, color.R, color.G, color.B), lineWidth: 0,label:  _selectedIds[i]); 
             }
 
             _ubound = xs[xs.Length-1];
@@ -1055,11 +1058,17 @@ namespace UI_Chart.Views {
                 histoChart.Plot.Remove(lineLLimit_Histo);
             } else {
                 lineLLimit_Histo = histoChart.Plot.AddVerticalLine(_lowLimit, Color.Red, 2, ScottPlot.LineStyle.Solid);
+                lineLLimit_Histo.PositionLabel = true;
+                lineLLimit_Histo.PositionLabelBackground = Color.MediumPurple;
+                lineLLimit_Histo.PositionFormatter = _lowLimit => $"{_lowLimit:N3}";
             }
             if (isInvalid(_highLimit) || !AxisLimitHisto.IsChecked.Value) {
                 histoChart.Plot.Remove(lineHLimit_Histo);
             } else {
                 lineHLimit_Histo = histoChart.Plot.AddVerticalLine(_highLimit, Color.Red, 2, ScottPlot.LineStyle.Solid);
+                lineHLimit_Histo.PositionLabel = true;
+                lineHLimit_Histo.PositionLabelBackground = Color.MediumPurple;
+                lineHLimit_Histo.PositionFormatter = _highLimit => $"{_highLimit:N3}";
             }
             if (isInvalid(_meanHisto) || !AxisMeanHisto.IsChecked.Value) {
                 histoChart.Plot.Remove(lineMean_Histo);
@@ -1448,7 +1457,7 @@ namespace UI_Chart.Views {
             } else {
                 lineHLimit_Histo = histoChart.Plot.AddVerticalLine(_highLimit, Color.Red, 2, ScottPlot.LineStyle.Solid);
             }
-
+          
             histoChart.Refresh();
         }
 
