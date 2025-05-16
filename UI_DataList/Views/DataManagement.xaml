@@ -1,34 +1,37 @@
-﻿<UserControl x:Class="UI_DataList.Views.DataManagement"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:prism="http://prismlibrary.com/"     
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" 
-             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:smCore="clr-namespace:SillyMonkey.Core;assembly=SillyMonkey.Core"
-             xmlns:local="clr-namespace:UI_DataList.ViewModels"
-             xmlns:core="clr-namespace:SillyMonkey.Core;assembly=SillyMonkey.Core" xmlns:views="clr-namespace:UI_DataList.Views"
-             x:Name="FileManagement"
-             d:DesignHeight="300" d:DesignWidth="300"
-             prism:ViewModelLocator.AutoWireViewModel="True">
+﻿<UserControl
+    x:Class="UI_DataList.Views.DataManagement"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:core="clr-namespace:SillyMonkey.Core;assembly=SillyMonkey.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:UI_DataList.ViewModels"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    xmlns:smCore="clr-namespace:SillyMonkey.Core;assembly=SillyMonkey.Core"
+    xmlns:views="clr-namespace:UI_DataList.Views"
+    x:Name="FileManagement"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    prism:ViewModelLocator.AutoWireViewModel="True"
+    mc:Ignorable="d">
     <UserControl.Resources>
-        <smCore:ImgVisibilityCtr x:Key="imgbool"/>
-        <core:BindingProxy x:Key="Proxy" Data="{Binding}"/>
+        <smCore:ImgVisibilityCtr x:Key="imgbool" />
+        <core:BindingProxy x:Key="Proxy" Data="{Binding}" />
 
         <HierarchicalDataTemplate DataType="{x:Type local:FileNode}" ItemsSource="{Binding SubDataList}">
             <StackPanel Orientation="Horizontal" ToolTip="{Binding FilePath}">
-                <Image Width="12" Height="12"  Visibility="{Binding ExtractedDone, Converter={StaticResource imgbool}}">
+                <Image Width="12" Height="12" Visibility="{Binding ExtractedDone, Converter={StaticResource imgbool}}">
                     <Image.Source>
-                        <BitmapImage UriSource="/SillyMonkey.Core;component/Resource/icon/load2.png"/>
+                        <BitmapImage UriSource="/SillyMonkey.Core;component/Resource/icon/load2.png" />
                     </Image.Source>
                 </Image>
-                <TextBlock Text="{Binding NodeName}"/>
+                <TextBlock Text="{Binding NodeName}" />
                 <StackPanel.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Create SubData(New Filter)" Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdCreateNewFilter}" CommandParameter="{Binding}"/>
-                        <MenuItem Header="Create SubData By Sites" Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdCreateSitesFilter}" CommandParameter="{Binding}"/>
-                        <MenuItem Header="Close File" Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdCloseFile}" CommandParameter="{Binding}"/>
+                        <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdCreateNewFilter}" CommandParameter="{Binding}" Header="Create SubData(New Filter)" />
+                        <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdCreateSitesFilter}" CommandParameter="{Binding}" Header="Create SubData By Sites" />
+                        <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdCloseFile}" CommandParameter="{Binding}" Header="Close File" />
                     </ContextMenu>
                 </StackPanel.ContextMenu>
             </StackPanel>
@@ -36,11 +39,11 @@
 
         <HierarchicalDataTemplate DataType="{x:Type local:FilterNode}">
             <StackPanel Orientation="Horizontal" ToolTip="{Binding FilePath}">
-                <TextBlock Text="{Binding NodeName}"/>
+                <TextBlock Text="{Binding NodeName}" />
                 <StackPanel.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Show Site Correlation" Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdSiteDataCorr}" CommandParameter="{Binding}"/>
-                        <MenuItem Header="Close SubData" Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdCloseData}" CommandParameter="{Binding}"/>
+                        <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdSiteDataCorr}" CommandParameter="{Binding}" Header="Show Site Correlation" />
+                        <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CmdCloseData}" CommandParameter="{Binding}" Header="Close SubData" />
                     </ContextMenu>
                 </StackPanel.ContextMenu>
             </StackPanel>
@@ -50,17 +53,22 @@
 
     <Grid DataContext="{Binding}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="3"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="3" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <views:TreeViewEx x:Name="dataList" DataContext="{Binding}" Grid.Row="0" ItemsSource="{Binding Files}" SelectedValuePath="">
+        <views:TreeViewEx
+            x:Name="dataList"
+            Grid.Row="0"
+            DataContext="{Binding}"
+            ItemsSource="{Binding Files}"
+            SelectedValuePath="">
             <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectedItemChanged" >
-                    <i:InvokeCommandAction Command="{Binding SelectData}" CommandParameter="{Binding ElementName=dataList,Path=SelectedItem}"/>
+                <i:EventTrigger EventName="SelectedItemChanged">
+                    <i:InvokeCommandAction Command="{Binding SelectData}" CommandParameter="{Binding ElementName=dataList, Path=SelectedItem}" />
                 </i:EventTrigger>
-                <i:EventTrigger EventName="MouseDoubleClickEx" >
-                    <i:InvokeCommandAction Command="{Binding OpenData}" CommandParameter="{Binding ElementName=dataList,Path=SelectedItem}"/>
+                <i:EventTrigger EventName="MouseDoubleClickEx">
+                    <i:InvokeCommandAction Command="{Binding OpenData}" CommandParameter="{Binding ElementName=dataList, Path=SelectedItem}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <TreeView.ItemContainerStyle>
@@ -69,13 +77,13 @@
                 </Style>
             </TreeView.ItemContainerStyle>
         </views:TreeViewEx>
-        <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>
-        <TabControl Grid.Row="2" >
+        <GridSplitter Grid.Row="1" VerticalAlignment="Stretch" />
+        <TabControl Grid.Row="2">
             <TabItem Header="File Sumary">
-                <ContentControl prism:RegionManager.RegionName="Region_Summary" Margin="-3" />
+                <ContentControl Margin="-3" prism:RegionManager.RegionName="Region_Summary" />
             </TabItem>
             <TabItem Header="Filter Setup">
-                <ContentControl prism:RegionManager.RegionName="Region_Filter" Margin="-3"/>
+                <ContentControl Margin="-3" prism:RegionManager.RegionName="Region_Filter" />
             </TabItem>
         </TabControl>
     </Grid>

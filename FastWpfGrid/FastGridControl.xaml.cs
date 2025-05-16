@@ -640,6 +640,5 @@ namespace FastWpfGrid
             get { return RealToModel(CurrentCell); }
             set { CurrentCell = ModelToReal(value); }
         }
-
     }
 }

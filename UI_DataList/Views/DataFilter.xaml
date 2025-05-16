@@ -141,7 +141,7 @@
                             <ColumnDefinition Width="40" />
                             <ColumnDefinition Width="35*" />
                         </Grid.ColumnDefinitions>
-                        <ListBox                           
+                        <ListBox
                             x:Name="lbAllSBins"
                             Grid.Column="0"
                             Grid.ColumnSpan="1"
@@ -162,9 +162,9 @@
                             ItemsSource="{Binding AllSBinsFullName}"
                             SelectionMode="Extended">
                             <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <i:EventTrigger EventName="MouseDoubleClick">
                                     <i:InvokeCommandAction Command="{Binding AddSBinFull}" CommandParameter="{Binding ElementName=lbAllSBinsFull}" />
-                            </i:EventTrigger>
+                                </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </ListBox>
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">

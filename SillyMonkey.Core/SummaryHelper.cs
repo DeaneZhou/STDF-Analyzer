@@ -269,7 +269,7 @@ namespace SillyMonkey.Core {
 
         public static void AppendField(ref StringBuilder sb, string fieldName, string content, bool skipIfNull = false) {
             if (skipIfNull) {
-                if (content == null || content.Trim().Length == 0) return;
+                if (content=="\0" || content == null || content.Trim().Length == 0) return;
             }
 
             sb.Append($"{fieldName + ":",-16}{content}\r\n");

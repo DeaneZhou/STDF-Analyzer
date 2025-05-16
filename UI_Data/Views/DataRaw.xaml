@@ -1,64 +1,130 @@
-﻿<UserControl x:Class="UI_Data.Views.DataRaw"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:prism="http://prismlibrary.com/"         
-             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:FastWpfGrid="clr-namespace:FastWpfGrid;assembly=FastWpfGrid"
-             mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800"
-             Name="dataRawControl">
+﻿<UserControl
+    x:Class="UI_Data.Views.DataRaw"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:FastWpfGrid="clr-namespace:FastWpfGrid;assembly=FastWpfGrid"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    Name="dataRawControl"
+    d:DesignHeight="600"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
     <Grid Name="mainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="25"/>
-            <ColumnDefinition Width="*" MinWidth="50"/>
-            <ColumnDefinition Width="3"/>
+            <ColumnDefinition Width="25" />
+            <ColumnDefinition Width="*" MinWidth="50" />
+            <ColumnDefinition Width="3" />
             <ColumnDefinition Width="0" />
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top">
-            <ToggleButton IsChecked="False" Name="btOpenSummary" Margin="0,25,0,20" Click="OpenSummary_Click" ToolTip="Open the summary report based on the current filter" Style="{StaticResource RadioStyleBtnToggle}" Height="21" Width="21">
-                <Image Source="/SillyMonkey.Core;component/Resource/icon/FontAwesome-FileAltRegular.png" Width="21" Height="21"/>
+        <StackPanel Grid.Column="0" VerticalAlignment="Top" Orientation="Vertical">
+            <ToggleButton
+                Name="btOpenSummary"
+                Width="21"
+                Height="21"
+                Margin="0,25,0,20"
+                Click="OpenSummary_Click"
+                IsChecked="False"
+                Style="{StaticResource RadioStyleBtnToggle}"
+                ToolTip="Open the summary report based on the current filter">
+                <Image Width="21" Height="21" Source="/SillyMonkey.Core;component/Resource/icon/FontAwesome-FileAltRegular.png" />
             </ToggleButton>
-            <ToggleButton IsChecked="False" Name="btShowTrend" Margin="0,0,0,20" Click="ShowTrend_Click" ToolTip="Show Histogram Chart" Style="{StaticResource RadioStyleBtnToggle}" Height="25" Width="21">
-                <Image Source="/SillyMonkey.Core;component/Resource/icon/MaterialLight-ChartHistogram.png" Width="21" Height="21"/>
+            <ToggleButton
+                Name="btShowTrend"
+                Width="21"
+                Height="25"
+                Margin="0,0,0,20"
+                Click="ShowTrend_Click"
+                IsChecked="False"
+                Style="{StaticResource RadioStyleBtnToggle}"
+                ToolTip="Show Histogram Chart">
+                <Image Width="21" Height="21" Source="/SillyMonkey.Core;component/Resource/icon/MaterialLight-ChartHistogram.png" />
             </ToggleButton>
-            <ToggleButton IsChecked="False" Name="btShowRaw" Margin="0,0,0,20" Click="ShowRaw_Click" ToolTip="Show Raw Data" Style="{StaticResource RadioStyleBtnToggle}" Height="25" Width="21">
-                <Image Source="/SillyMonkey.Core;component/Resource/icon/Codicons-Table.png" Width="21" Height="21"/>
+            <ToggleButton
+                Name="btShowRaw"
+                Width="21"
+                Height="25"
+                Margin="0,0,0,20"
+                Click="ShowRaw_Click"
+                IsChecked="False"
+                Style="{StaticResource RadioStyleBtnToggle}"
+                ToolTip="Show Raw Data">
+                <Image Width="21" Height="21" Source="/SillyMonkey.Core;component/Resource/icon/Codicons-Table.png" />
             </ToggleButton>
-            <ToggleButton IsChecked="False" Name="btShowCorr" Margin="0,0,0,20" Click="ShowCorr_Click" ToolTip="Show Item Correlation" Style="{StaticResource RadioStyleBtnToggle}" Height="25" Width="21">
-                <Image Source="/SillyMonkey.Core;component/Resource/icon/VaadinIcons-ScatterChart.png" Width="21" Height="21"/>
+            <ToggleButton
+                Name="btShowCorr"
+                Width="21"
+                Height="25"
+                Margin="0,0,0,20"
+                Click="ShowCorr_Click"
+                IsChecked="False"
+                Style="{StaticResource RadioStyleBtnToggle}"
+                ToolTip="Show Item Correlation">
+                <Image Width="21" Height="21" Source="/SillyMonkey.Core;component/Resource/icon/VaadinIcons-ScatterChart.png" />
             </ToggleButton>
-            <ToggleButton IsChecked="False" Name="btShowWaferMap" Margin="0,0,0,20" Click="ShowWaferMap_Click" ToolTip="Show Wafer Map" Style="{StaticResource RadioStyleBtnToggle}" Height="25" Width="21">
-                <Image Source="/SillyMonkey.Core;component/Resource/icon/Modern-Grid.png" Width="21" Height="21"/>
+            <ToggleButton
+                Name="btShowWaferMap"
+                Width="21"
+                Height="25"
+                Margin="0,0,0,20"
+                Click="ShowWaferMap_Click"
+                IsChecked="False"
+                Style="{StaticResource RadioStyleBtnToggle}"
+                ToolTip="Show Wafer Map">
+                <Image Width="21" Height="21" Source="/SillyMonkey.Core;component/Resource/icon/Modern-Grid.png" />
             </ToggleButton>
 
         </StackPanel>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="25" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <TextBlock Text="Item Filter:" VerticalAlignment="Center" />
-                    <TextBox Name="tbTestNameFilter" Width="80" VerticalAlignment="Center" TextChanged="tbTestNameFilter_TextChanged" ToolTip="Follow Rule of Regular Expression, ignorecase"
-                             BorderBrush="Black" BorderThickness="0,0,0,1" Background="Transparent"/>
-                    <Button Margin="10,0,10,0" Click="CorrelationBySite_Click" ToolTip="Show Site Correlation" BorderThickness="0">
-                        <Image Source="/SillyMonkey.Core;component/Resource/icon/Material-SetSplit.png" Width="21" Height="21"/>
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Text="Item Filter:" />
+                    <TextBox
+                        Name="tbTestNameFilter"
+                        Width="80"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderBrush="Black"
+                        BorderThickness="0,0,0,1"
+                        TextChanged="tbTestNameFilter_TextChanged"
+                        ToolTip="Follow Rule of Regular Expression, ignorecase" />
+                    <Button
+                        Margin="10,0,10,0"
+                        BorderThickness="0"
+                        Click="CorrelationBySite_Click"
+                        ToolTip="Show Site Correlation">
+                        <Image Width="21" Height="21" Source="/SillyMonkey.Core;component/Resource/icon/Material-SetSplit.png" />
                     </Button>
-                    <Button Margin="0,0,10,0" Click="ExportToExcel_Click" ToolTip="Export To Excel" BorderThickness="0">
-                        <Image Source="/SillyMonkey.Core;component/Resource/icon/Material-DatabaseExportOutline.png" Width="21" Height="21"/>
+                    <Button
+                        Margin="0,0,10,0"
+                        BorderThickness="0"
+                        Click="ExportToExcel_Click"
+                        ToolTip="Export To Excel">
+                        <Image Width="21" Height="21" Source="/SillyMonkey.Core;component/Resource/icon/Material-DatabaseExportOutline.png" />
                     </Button>
                 </StackPanel>
             </Grid>
-            <FastWpfGrid:FastGridControl x:Name="rawGrid" Grid.Row="1" AllowSelectAll="False" SelectionMode="RowMode"
-                                         SelectedCellsChanged="rawGrid_SelectedCellsChanged"
-                                         ColumnHeaderDoubleClick="rawGrid_ColumnHeaderDoubleClick">
-            </FastWpfGrid:FastGridControl>
-
+            <FastWpfGrid:FastGridControl
+                x:Name="rawGrid"
+                Grid.Row="1"
+                AllowSelectAll="False"
+                ColumnHeaderDoubleClick="rawGrid_ColumnHeaderDoubleClick"
+                MouseRightButtonUp="rawGrid_MouseRightButtonUp"
+                SelectedCellsChanged="rawGrid_SelectedCellsChanged"
+                SelectionMode="RowMode" />
         </Grid>
-        <GridSplitter Name="splitter" Grid.Column="2" HorizontalAlignment="Stretch" IsEnabled="False" DragCompleted="splitter_DragCompleted" />
-        <ContentControl Grid.Column="3" Name="contentCtr"/>
+        <GridSplitter
+            Name="splitter"
+            Grid.Column="2"
+            HorizontalAlignment="Stretch"
+            DragCompleted="splitter_DragCompleted"
+            IsEnabled="False" />
+        <ContentControl Name="contentCtr" Grid.Column="3" />
     </Grid>
 </UserControl>

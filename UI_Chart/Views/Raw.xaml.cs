@@ -253,6 +253,7 @@ namespace UI_Chart.Views {
         private void ExportToExcel_Click(object sender, System.Windows.RoutedEventArgs e) {
             ExportToExcelAsync();
         }
+
     }
 
 }

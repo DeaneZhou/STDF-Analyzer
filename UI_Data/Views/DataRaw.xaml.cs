@@ -3,6 +3,7 @@ using FastWpfGrid;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
+using ScottPlot.Drawing.Colormaps;
 using SillyMonkey.Core;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,13 @@ using System.Text;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+//using System.Windows.Forms;
+
+using System.Windows.Input;
+
+//using System.Windows.Forms;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 using UI_Data.ViewModels;
 
@@ -353,6 +361,36 @@ namespace UI_Data.Views {
             } else {
                 chartViewWidth = 0;
             }
+        }
+
+        private void rawGrid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ContextMenu cM = new ContextMenu();
+
+            MenuItem menuItem = new MenuItem();
+            menuItem.Header = "Copy";
+            menuItem.Click += MenuItem_Click;
+
+            cM.Items.Add(menuItem);
+            cM.IsOpen = true;
+
+            cM.HorizontalOffset = cM.ActualWidth;
+            e.Handled = true;
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            string temp = "TestName\tLoLimit\tHiLimit\tUnit\r\n";
+            foreach (var v in rawGrid.GetSelectedModelRows())
+            {              
+                var testName = _rawDataModel.GetCellText(v, 2);
+                var limitLow = _rawDataModel.GetCellText(v, 3);
+                var limitHigh = _rawDataModel.GetCellText(v, 4);
+                var unit = _rawDataModel.GetCellText(v, 5);
+
+                temp = temp+testName+"\t"+limitLow + "\t" + limitHigh + "\t" + unit +"\r\n";  
+            }
+            Clipboard.SetText(temp);
         }
     }
 }

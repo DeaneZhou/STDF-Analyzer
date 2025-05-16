@@ -8,7 +8,7 @@ namespace SillyMonkey.Core {
     public static class SA {
 
         private static Color[] ColorList = {
-                Color.FromRgb(0, 0, 255),
+                Color.FromRgb(0, 180, 255),
                 Color.FromRgb(255, 182, 193),
                 
                 Color.FromRgb(166, 86, 40),
