@@ -332,16 +332,17 @@
                 <!--  /*  -->
                 <ToggleButton
                     x:Name="tgPopSites"
-                    Width="23"
+                    Width="40"
                     Height="23"
                     Margin="20,0,0,0"
+                    
                     HorizontalAlignment="Left"
-                    Background="Transparent"
-                    BorderThickness="0"
+                    Background="LightGray"
+                    BorderThickness="1"
                     IsEnabled="{Binding ElementName=toggleSplitSite, Path=IsChecked}"
                     ToolTip="Select Sites">
                     <!--<Image Source="/SillyMonkey.Core;component/Resource/icon/VaadinIcons-EllipsisDotsV.png" />-->
-                    <TextBlock Background="LightBlue" Text="S" />
+                    <TextBlock Background="Transparent" Text="Sites" />
                 </ToggleButton>
                 <Popup
                     x:Name="popSites"

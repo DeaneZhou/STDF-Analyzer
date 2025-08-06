@@ -1,11 +1,4 @@
-﻿using DataContainer;
-using FastWpfGrid;
-using Prism.Commands;
-using Prism.Events;
-using Prism.Regions;
-using ScottPlot.Drawing.Colormaps;
-using SillyMonkey.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -17,25 +10,33 @@ using System.Windows.Controls.Primitives;
 //using System.Windows.Forms;
 
 using System.Windows.Input;
-
 //using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using DataContainer;
+using FastWpfGrid;
+using Prism.Commands;
+using Prism.Events;
+using Prism.Regions;
+using ScottPlot.Drawing.Colormaps;
+using SillyMonkey.Core;
 using UI_Data.ViewModels;
 
-namespace UI_Data.Views {
+namespace UI_Data.Views
+{
     /// <summary>
     /// Interaction logic for DataRaw
     /// </summary>
-    public partial class DataRaw : UserControl, INavigationAware, IDataView {
-        public DataRaw(IRegionManager regionManager, IEventAggregator ea) {
+    public partial class DataRaw : UserControl, INavigationAware, IDataView
+    {
+        public DataRaw(IRegionManager regionManager, IEventAggregator ea)
+        {
             InitializeComponent();
             _regionManager = regionManager;
             _ea = ea;
 
             timer_Item.Interval = 300;
             timer_Item.Elapsed += Timer_Item_Elapsed;
-
         }
 
         private double chartViewWidth = 0;
@@ -44,8 +45,10 @@ namespace UI_Data.Views {
         IEventAggregator _ea;
 
         SubData _subData;
-        public SubData? CurrentData {
-            get {
+        public SubData? CurrentData
+        {
+            get
+            {
                 if (_subData.StdFilePath is null)
                     return null;
                 else
@@ -53,16 +56,24 @@ namespace UI_Data.Views {
             }
         }
         List<SubData> _subDataList = null;
-        public List<SubData> SubDataList { get { return _subDataList; } }
+        public List<SubData> SubDataList
+        {
+            get { return _subDataList; }
+        }
 
-        public TabType CurrentTabType { get { return TabType.RawDataTab; } }
+        public TabType CurrentTabType
+        {
+            get { return TabType.RawDataTab; }
+        }
 
         int _fileIdx = -1;
 
         private string _regionName;
 
-        private void UpdateView(SubData data) {
-            if (data.Equals(_subData)) {
+        private void UpdateView(SubData data)
+        {
+            if (data.Equals(_subData))
+            {
                 _rawDataModel.UpdateView();
             }
         }
@@ -71,34 +82,37 @@ namespace UI_Data.Views {
 
         private Timer timer_Item = new Timer();
 
-
         private DelegateCommand<object> _closeCmd;
         public DelegateCommand<object> CloseCommand =>
             _closeCmd ?? (_closeCmd = new DelegateCommand<object>(ExecuteCloseCommand));
 
-        void ExecuteCloseCommand(object x) {
+        void ExecuteCloseCommand(object x)
+        {
             //_regionManager.Regions["Region_DataView"].Remove(x);
             _ea.GetEvent<Event_CloseData>().Publish(_subData);
         }
 
-        public bool IsNavigationTarget(NavigationContext navigationContext) {
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
             var data = (SubData)navigationContext.Parameters["subData"];
 
             return data.Equals(_subData);
         }
 
-        public void OnNavigatedFrom(NavigationContext navigationContext) {
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
             ;
         }
 
-        public void OnNavigatedTo(NavigationContext navigationContext) {
-            if (_fileIdx == -1) {
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            if (_fileIdx == -1)
+            {
                 _subData = (SubData)navigationContext.Parameters["subData"];
                 _fileIdx = (int)navigationContext.Parameters["fileIdx"];
 
                 _subDataList = new List<SubData>();
                 _subDataList.Add(_subData);
-
 
                 _rawDataModel = new DataRaw_FastDataGridModel(_subData);
                 rawGrid.Model = _rawDataModel;
@@ -112,91 +126,107 @@ namespace UI_Data.Views {
                 //ShowSummary();
 
                 _ea.GetEvent<Event_FilterUpdated>().Subscribe(UpdateView);
-
             }
         }
 
         private List<string> _selectedItemList = new List<string>();
 
-        private void ShowSummary() {
+        private void ShowSummary()
+        {
             var parameters = new NavigationParameters();
             parameters.Add("subData", _subData);
 
             _regionManager.RequestNavigate(_regionName, "Summary", parameters);
         }
 
-        private void ShowTrend() {
-
+        private void ShowTrend()
+        {
             var parameters = new NavigationParameters();
             parameters.Add("itemList", _selectedItemList);
             parameters.Add("subData", _subData);
 
-
             _regionManager.RequestNavigate(_regionName, "Trend", parameters);
         }
 
-        private void ShowRaw() {
+        private void ShowRaw()
+        {
             var parameters = new NavigationParameters();
             parameters.Add("subData", _subData);
             _regionManager.RequestNavigate(_regionName, "Raw", parameters);
         }
-        private void ShowBox() {
 
-        }
-        private void ShowWaferMap() {
+        private void ShowBox() { }
 
+        private void ShowWaferMap()
+        {
             var parameters = new NavigationParameters();
             parameters.Add("subData", _subData);
 
             _regionManager.RequestNavigate(_regionName, "WaferMap", parameters);
-
         }
 
-        private void ShowCorr() {
-
+        private void ShowCorr()
+        {
             var parameters = new NavigationParameters();
             parameters.Add("itemList", _selectedItemList);
             parameters.Add("subData", _subData);
 
             _regionManager.RequestNavigate(_regionName, "ItemCorr", parameters);
         }
-        
-        private void ShowSiteCorr() {
+
+        private void ShowSiteCorr()
+        {
             var parameters = new NavigationParameters();
             parameters.Add("subData", _subData);
             _regionManager.RequestNavigate("Region_DataView", "SiteDataCorrelation", parameters);
         }
 
-        private async void ExportToExcelAsync() {
+        private async void ExportToExcelAsync()
+        {
             string path;
-            using (System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog()) {
+            using (
+                System.Windows.Forms.SaveFileDialog saveFileDialog =
+                    new System.Windows.Forms.SaveFileDialog()
+            )
+            {
                 saveFileDialog.AddExtension = true;
                 saveFileDialog.Filter = "Excel Files | *.csv";
                 saveFileDialog.DefaultExt = "csv";
-                saveFileDialog.FileName = System.IO.Path.GetFileNameWithoutExtension(_subData.StdFilePath) + "_statistic";
+                saveFileDialog.FileName =
+                    System.IO.Path.GetFileNameWithoutExtension(_subData.StdFilePath) + "_statistic";
                 saveFileDialog.ValidateNames = true;
-                if (saveFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
+                if (saveFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
                     return;
                 }
                 path = saveFileDialog.FileName;
-            };
+            }
+            ;
 
             _ea.GetEvent<Event_Log>().Publish("Writing......");
-            await System.Threading.Tasks.Task.Run(() => {
-                try {
-                    using (var sw = new StreamWriter(path)) {
+            await System.Threading.Tasks.Task.Run(() =>
+            {
+                try
+                {
+                    using (var sw = new StreamWriter(path))
+                    {
                         StringBuilder sb = new StringBuilder();
 
-                        for (int c = 0; c < _rawDataModel.ColumnCount; c++) {
-                            if (c > 0) sb.Append(',');
+                        for (int c = 0; c < _rawDataModel.ColumnCount; c++)
+                        {
+                            if (c > 0)
+                                sb.Append(',');
                             sb.Append(_rawDataModel.GetColumnHeaderText(c));
                         }
                         sw.WriteLine(sb.ToString());
                         sb.Clear();
 
-                        for (int r = 0; r < _rawDataModel.RowCount; r++) {
-                            for (int c = 0; c < _rawDataModel.ColumnCount; c++) {
-                                if (c > 0) sb.Append(',');
+                        for (int r = 0; r < _rawDataModel.RowCount; r++)
+                        {
+                            for (int c = 0; c < _rawDataModel.ColumnCount; c++)
+                            {
+                                if (c > 0)
+                                    sb.Append(',');
                                 sb.Append(_rawDataModel.GetCellText(r, c));
                             }
                             sw.WriteLine(sb.ToString());
@@ -204,7 +234,9 @@ namespace UI_Data.Views {
                         }
                         sw.Close();
                     }
-                } catch {
+                }
+                catch
+                {
                     _ea.GetEvent<Event_Log>().Publish("Write failed");
                 }
             });
@@ -212,54 +244,73 @@ namespace UI_Data.Views {
             _ea.GetEvent<Event_Log>().Publish("Exported at:" + path);
         }
 
-        private void SetProgress(string log, int percent) {
+        private void SetProgress(string log, int percent)
+        {
             _ea.GetEvent<Event_Progress>().Publish(new Tuple<string, int>(log, percent));
         }
 
-
-        private void rawGrid_SelectedCellsChanged(object sender, FastWpfGrid.SelectionChangedEventArgs e) {
+        private void rawGrid_SelectedCellsChanged(
+            object sender,
+            FastWpfGrid.SelectionChangedEventArgs e
+        )
+        {
             _selectedItemList.Clear();
 
-            foreach (var v in rawGrid.GetSelectedModelRows()) {
-
+            foreach (var v in rawGrid.GetSelectedModelRows())
+            {
                 //Console.WriteLine($"row:{v}");
                 var id = _rawDataModel.GetTestId(v);
-                if (!string.IsNullOrEmpty(id)) _selectedItemList.Add(id);
+                if (!string.IsNullOrEmpty(id))
+                    _selectedItemList.Add(id);
             }
 
-            if (_selectedItemList.Count > 0) {
-                _ea.GetEvent<Event_ItemsSelected>().Publish(new Tuple<SubData, List<string>>(_subData, _selectedItemList));
+            if (_selectedItemList.Count > 0)
+            {
+                _ea.GetEvent<Event_ItemsSelected>()
+                    .Publish(new Tuple<SubData, List<string>>(_subData, _selectedItemList));
             }
-
         }
 
-        private void rawGrid_ColumnHeaderDoubleClick(object arg1, FastWpfGrid.ColumnClickEventArgs arg2) {
+        private void rawGrid_ColumnHeaderDoubleClick(
+            object arg1,
+            FastWpfGrid.ColumnClickEventArgs arg2
+        )
+        {
             _rawDataModel.SortColumn(arg2.Column);
         }
 
-        private void EnableChartView() {
-            if (splitter.IsEnabled == false) {
+        private void EnableChartView()
+        {
+            if (splitter.IsEnabled == false)
+            {
                 splitter.IsEnabled = true;
 
-                if(chartViewWidth == 0) chartViewWidth = mainGrid.ActualWidth * 0.6;
+                if (chartViewWidth == 0)
+                    chartViewWidth = mainGrid.ActualWidth * 0.45;
 
                 mainGrid.ColumnDefinitions[3].Width = new GridLength(chartViewWidth);
             }
         }
 
-        private void DisableChartView() {
-            if (splitter.IsEnabled == true) {
+        private void DisableChartView()
+        {
+            if (splitter.IsEnabled == true)
+            {
                 splitter.IsEnabled = false;
 
                 mainGrid.ColumnDefinitions[3].Width = new GridLength(0);
             }
         }
 
-        private void OpenSummary_Click(object sender, System.Windows.RoutedEventArgs e) {
-            if(btOpenSummary.IsChecked == false) {
+        private void OpenSummary_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (btOpenSummary.IsChecked == false)
+            {
                 DisableChartView();
                 _regionManager.Regions[_regionName].RemoveAll();
-            } else {
+            }
+            else
+            {
                 EnableChartView();
                 //btOpenSummary.IsChecked = false;
                 btShowTrend.IsChecked = false;
@@ -270,11 +321,15 @@ namespace UI_Data.Views {
             }
         }
 
-        private void ShowTrend_Click(object sender, System.Windows.RoutedEventArgs e) {
-            if (btShowTrend.IsChecked == false) {
+        private void ShowTrend_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (btShowTrend.IsChecked == false)
+            {
                 DisableChartView();
                 _regionManager.Regions[_regionName].RemoveAll();
-            } else {
+            }
+            else
+            {
                 EnableChartView();
                 btOpenSummary.IsChecked = false;
                 //btShowTrend.IsChecked = false;
@@ -285,11 +340,15 @@ namespace UI_Data.Views {
             }
         }
 
-        private void ShowRaw_Click(object sender, System.Windows.RoutedEventArgs e) {
-            if (btShowRaw.IsChecked == false) {
+        private void ShowRaw_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (btShowRaw.IsChecked == false)
+            {
                 DisableChartView();
                 _regionManager.Regions[_regionName].RemoveAll();
-            } else {
+            }
+            else
+            {
                 EnableChartView();
                 btOpenSummary.IsChecked = false;
                 btShowTrend.IsChecked = false;
@@ -300,11 +359,15 @@ namespace UI_Data.Views {
             }
         }
 
-        private void ShowCorr_Click(object sender, System.Windows.RoutedEventArgs e) {
-            if (btShowCorr.IsChecked == false) {
+        private void ShowCorr_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (btShowCorr.IsChecked == false)
+            {
                 DisableChartView();
                 _regionManager.Regions[_regionName].RemoveAll();
-            } else {
+            }
+            else
+            {
                 EnableChartView();
                 btOpenSummary.IsChecked = false;
                 btShowTrend.IsChecked = false;
@@ -315,11 +378,15 @@ namespace UI_Data.Views {
             }
         }
 
-        private void ShowWaferMap_Click(object sender, System.Windows.RoutedEventArgs e) {
-            if (btShowWaferMap.IsChecked == false) {
+        private void ShowWaferMap_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (btShowWaferMap.IsChecked == false)
+            {
                 DisableChartView();
                 _regionManager.Regions[_regionName].RemoveAll();
-            } else {
+            }
+            else
+            {
                 EnableChartView();
                 btOpenSummary.IsChecked = false;
                 btShowTrend.IsChecked = false;
@@ -330,35 +397,49 @@ namespace UI_Data.Views {
             }
         }
 
-        private void CorrelationBySite_Click(object sender, System.Windows.RoutedEventArgs e) {
+        private void CorrelationBySite_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
             ShowSiteCorr();
         }
 
-        private void ExportToExcel_Click(object sender, System.Windows.RoutedEventArgs e) {
+        private void ExportToExcel_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
             ExportToExcelAsync();
         }
 
-        private void tbTestNameFilter_TextChanged(object sender, TextChangedEventArgs e) {
-            lock (this) {
+        private void tbTestNameFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            lock (this)
+            {
                 timer_Item.Stop();
                 timer_Item.Start();
             }
         }
 
-        private void Timer_Item_Elapsed(object sender, ElapsedEventArgs e) {
-            lock (this) {
+        private void Timer_Item_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            lock (this)
+            {
                 timer_Item.Stop();
-                this.Dispatcher.Invoke(() => {
+                this.Dispatcher.Invoke(() =>
+                {
                     _rawDataModel.FilterColumn(2, tbTestNameFilter.Text);
                 });
             }
         }
 
-        private void splitter_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e) {
+        private void splitter_DragCompleted(
+            object sender,
+            System.Windows.Controls.Primitives.DragCompletedEventArgs e
+        )
+        {
             double minWidth = 300;
-            if (mainGrid.ColumnDefinitions[3].ActualWidth > minWidth) {
+            if (mainGrid.ColumnDefinitions[3].ActualWidth > minWidth)
+            {
                 chartViewWidth = mainGrid.ColumnDefinitions[3].ActualWidth;
-            } else {
+            }
+            else
+            {
                 chartViewWidth = 0;
             }
         }
@@ -382,13 +463,13 @@ namespace UI_Data.Views {
         {
             string temp = "TestName\tLoLimit\tHiLimit\tUnit\r\n";
             foreach (var v in rawGrid.GetSelectedModelRows())
-            {              
+            {
                 var testName = _rawDataModel.GetCellText(v, 2);
                 var limitLow = _rawDataModel.GetCellText(v, 3);
                 var limitHigh = _rawDataModel.GetCellText(v, 4);
                 var unit = _rawDataModel.GetCellText(v, 5);
 
-                temp = temp+testName+"\t"+limitLow + "\t" + limitHigh + "\t" + unit +"\r\n";  
+                temp = temp + testName + "\t" + limitLow + "\t" + limitHigh + "\t" + unit + "\r\n";
             }
             Clipboard.SetText(temp);
         }

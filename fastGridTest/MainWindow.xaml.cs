@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,56 +16,70 @@ using System.Windows.Shapes;
 using DataContainer;
 using FileReader;
 
-namespace fastGridTest {
+namespace fastGridTest
+{
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window {
-        public MainWindow() {
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
             InitializeComponent();
         }
 
         SubData _subData;
         DataRaw_FastDataGridModel _rawDataModel;
-        private void Window_Loaded(object sender, RoutedEventArgs e) {
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
             OpenStdFile(@"C:\Users\Harlin\Documents\SillyMonkey\stdfData\12345678.stdf");
             //OpenStdFile(@"E:\temp\PM853_log.std");
             //var _rawDataModel = new FastDataGridModel(_subData);
             _rawDataModel = new DataRaw_FastDataGridModel(_subData);
             rawgrid.Model = _rawDataModel;
             rawgrid.ColumnHeaderDoubleClick += Rawgrid_ColumnHeaderDoubleClick;
-
         }
 
-        private void Rawgrid_ColumnHeaderDoubleClick(object arg1, FastWpfGrid.ColumnClickEventArgs arg2) {
+        private void Rawgrid_ColumnHeaderDoubleClick(
+            object arg1,
+            FastWpfGrid.ColumnClickEventArgs arg2
+        )
+        {
             Console.WriteLine(arg2.Column.ToString());
             _rawDataModel.SortColumn(arg2.Column);
         }
 
-        private void OpenStdFile(string path) {
-            try {
+        private void OpenStdFile(string path)
+        {
+            try
+            {
                 var info = new System.IO.FileInfo(path);
             }
-            catch {
+            catch
+            {
                 return;
             }
 
-            if (StdDB.IfExsistFile(path)) {
+            if (StdDB.IfExsistFile(path))
+            {
                 return;
             }
-            try {
+            try
+            {
                 var dataAcquire = StdDB.CreateSubContainer(path);
-                using (var data = new StdReader(path, StdFileType.STD)) {
+                using (var data = new StdReader(path, StdFileType.STD))
+                {
                     data.ExtractStdf();
                 }
                 var id = dataAcquire.CreateFilter();
                 _subData = new SubData(path, id);
-
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
                 return;
             }
-
         }
     }
 }
